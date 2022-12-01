@@ -45,3 +45,16 @@ case class OptionInsideList[A](value: List[Option[A]]):
         case None => List(None)
       }
     )
+
+case class OptionInsideX[A, X[_]](value: X[Option[A]]):
+
+  def map[B](f: A => B): OptionInsideX[B, X] =
+    OptionInsideX(value.map(_.map(f)))
+
+  def flatMap[B](f: A => OptionInsideX[B, X]): OptionInsideX[B, X] =
+    OptionInsideX(
+      value.flatMap {
+        case Some(a) => f(a).value
+        case None => mx.pure(None)
+      }
+    )
