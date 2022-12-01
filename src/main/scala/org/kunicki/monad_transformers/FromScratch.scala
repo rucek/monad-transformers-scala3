@@ -12,4 +12,5 @@ class FromScratch:
 
   private def findCompanyByUser(user: User): Effect[Company] = ???
 
-  def findCompanyByUserId(id: Long): Effect[Company] = ???
+  def findCompanyByUserId(id: Long): Effect[Company] =
+    findCompanyByUser(findUserById(id))
