@@ -8,7 +8,7 @@ case class Company(id: Long, name: String)
 
 class FromScratch:
 
-  type Effect[A] = Future[Option[A]]
+  type Effect[A] = OptionInsideFuture[A]
 
   private def findUserById(id: Long): Effect[User] = ???
 
@@ -19,3 +19,16 @@ class FromScratch:
       user <- findUserById(id)
       company <- findCompanyByUser(user)
     } yield company
+
+case class OptionInsideFuture[A](value: Future[Option[A]]):
+
+  def map[B](f: A => B)(using ExecutionContext): OptionInsideFuture[B] =
+    OptionInsideFuture(value.map(_.map(f)))
+
+  def flatMap[B](f: A => OptionInsideFuture[B])(using ExecutionContext): OptionInsideFuture[B] =
+    OptionInsideFuture(
+      value.flatMap {
+        case Some(a) => f(a).value
+        case None => Future.successful(None)
+      }
+    )
