@@ -1,5 +1,6 @@
 package org.kunicki.monad_transformers
 
+import cats.data.OptionT
 import cats.{Applicative, FlatMap, Functor}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -10,7 +11,7 @@ case class Company(id: Long, name: String)
 
 class FromScratch:
 
-  type Effect[A] = OptionInsideX[A, Future]
+  type Effect[A] = OptionT[Future, A]
 
   private def findUserById(id: Long): Effect[User] = ???
 
